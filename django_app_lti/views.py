@@ -10,7 +10,8 @@ from braces.views import CsrfExemptMixin, LoginRequiredMixin
 
 from .models import LTIResource, LTICourse, LTICourseUser
 
-import urlparse
+#import urlparse
+from six.moves.urllib.parse import urlparse, urlencode, urlunparse, parse_qs
 import urllib
 
 LTI_SETUP = settings.LTI_SETUP
@@ -235,10 +236,10 @@ class LTIToolConfigView(View):
         URL manually and remove the resource_link_id parameter if present. This will
         prevent any issues upon redirect from the launch.
         '''
-        parts = urlparse.urlparse(url)
-        query_dict = urlparse.parse_qs(parts.query)
+        parts = urlparse(url)
+        query_dict = parse_qs(parts.query)
         if 'resource_link_id' in query_dict:
             query_dict.pop('resource_link_id', None)
         new_parts = list(parts)
-        new_parts[4] = urllib.urlencode(query_dict)
-        return urlparse.urlunparse(new_parts)
+        new_parts[4] = urlencode(query_dict)
+        return urlunparse(new_parts)
